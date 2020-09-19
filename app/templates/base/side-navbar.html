@@ -1,0 +1,84 @@
+{% block sidenavbar %}
+<!-- BEGIN: Main Menu-->
+    <!-- main menu-->
+    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+        <!-- main menu header-->
+        <!-- / main menu header-->
+        <!-- main menu content-->
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+                <li class=" navigation-header"><span>General</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="General"></i></li>
+                <!-- Dashboard -->
+                <li class=" nav-item"><a href="{{url_for('dashboard.index')}}"><i class="feather icon-home"></i><span class="menu-title" data-i18n="">Dashboard</span></a></li>
+                <!-- Branches -->
+                <li class=" nav-item"><a href="{{url_for('general.branches')}}"><i class="fa fa-building-o"></i><span class="menu-title" data-i18n="">Branches</span></a></li>
+                <!-- Users -->
+                <li class=" nav-item"><a href="{#{url_for('general.parties')}#}"><i class="fa fa-user-o"></i><span class="menu-title" data-i18n="">Parties</span></a></li>
+                <!-- Orders -->
+                <li class=" nav-item"><a href="#"><i class="feather icon-shopping-cart"></i><span class="menu-title" data-i18n="">Orders</span></a></li>
+                <!-- Products -->
+                <li class=" nav-item"><a href="{#{url_for('general.products')}#}"><i class="feather icon-box"></i><span class="menu-title" data-i18n="">Products</span></a></li>
+                <!-- Masters -->
+                <li class=" navigation-header"><span>Masters</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="Masters"></i></li>
+                <!-- Taxes -->
+                <li class=" nav-item"><a href="{{url_for('masters.taxes')}}"><i class="feather icon-percent"></i><span class="menu-title" data-i18n="">Taxes</span></a></li>
+                <!-- Units -->
+                <li class=" nav-item"><a href="{{url_for('masters.units')}}"><i class="fa fa-balance-scale"></i><span class="menu-title" data-i18n="">Units</span></a></li>
+                <!-- Brands -->
+                <li class=" nav-item"><a href="{{url_for('masters.brands')}}"><i class="feather icon-bold"></i><span class="menu-title" data-i18n="">Brands</span></a></li>
+                <!-- Colours -->
+                <li class=" nav-item"><a href="{{url_for('masters.colours_route')}}"><i class="feather icon-droplet"></i><span class="menu-title" data-i18n="">Colours</span></a></li>
+                <!-- Products Groups -->
+                <li class=" nav-item"><a href="{{url_for('masters.productgroups')}}"><i class="fa fa-cubes"></i><span class="menu-title" data-i18n="">Product Groups</span></a></li>
+                <!-- Products Groups -->
+                <li class=" nav-item"><a href="{{url_for('masters.productsubgroups')}}"><i class="feather icon-box"></i><span class="menu-title" data-i18n="">Product Sub Groups</span></a></li>
+                <!-- Manufacture Process -->
+                <li class=" nav-item"><a href="{{url_for('masters.manufacturingprocess')}}"><i class="fa fa-cogs"></i><span class="menu-title" data-i18n="">Manufacture Process</span></a></li>
+                <!-- Party Groups -->
+                <li class=" nav-item"><a href="{{url_for('masters.usergroups')}}"><i class="feather icon-users"></i><span class="menu-title" data-i18n="">Party Groups</span></a></li>
+                <!-- Accounting -->
+                <li class=" navigation-header"><span>Accounting</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="Masters"></i></li>
+                <!-- Accounts -->
+                <li class=" nav-item"><a href="#"><i class="feather icon-file-text"></i><span class="menu-title" data-i18n="">Accounts</span></a>
+                    <ul class="menu-content">
+                        <li><a class="menu-item" href="#">Dummy</a></li>
+                    </ul>
+                </li>
+                <!-- Transactions -->
+                <li class=" nav-item"><a href="#"><i class="feather icon-repeat"></i><span class="menu-title" data-i18n="">Transactions</span></a>
+                    <ul class="menu-content">
+                        <li><a class="menu-item" href="#">Dummy</a></li>
+                    </ul>
+                </li>
+                <!-- Reports -->
+                <li class=" nav-item"><a href="#"><i class="feather icon-pie-chart"></i><span class="menu-title" data-i18n="">Reports</span></a>
+                    <ul class="menu-content">
+                        <li><a class="menu-item" href="#">Dummy</a></li>
+                    </ul>
+                </li>
+                <!-- Extra -->
+                <li class=" navigation-header"><span>Extra</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="Masters"></i></li>
+                <!-- Tools -->
+                <li class=" nav-item"><a href="#"><i class="fa fa-wrench"></i><span class="menu-title" data-i18n="">Tools</span></a>
+                    <ul class="menu-content">
+                        <!-- Merge Product -->
+                        <li><a class="menu-item" href="#">Merge Product</a></li>
+                        <!-- Merge Party -->
+                        <li><a class="menu-item" href="#">Merge Party</a></li>
+                        <!-- Export to Tally -->
+                        <li><a class="menu-item" href="#">Export to Tally</a></li>
+                        <!-- Backup & Restore -->
+                        <li><a class="menu-item" href="#">Backup & Restore</a></li>
+                    </ul>
+                </li>
+                <!-- Settings -->
+                <li class=" nav-item"><a href="#"><i class="feather icon-settings"></i><span class="menu-title" data-i18n="">Settings</span></a></li>
+            </ul>
+        </div>
+        <!-- /main menu content-->
+        <!-- main menu footer-->
+        <!-- main menu footer-->
+    </div>
+    <!-- / main menu-->
+    <!-- END: Main Menu-->
+{% endblock %}

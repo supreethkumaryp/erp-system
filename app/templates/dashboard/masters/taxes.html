@@ -1,0 +1,131 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+    <div class="col-12" id="main-content">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="content-header-title mb-0">Taxes</h3>
+                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="create-tax" data-params="new" class="btn bg-transparent"><i class="fa fa-plus-circle font-large-2 text-primary"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body card-dashboard">
+                    <table class="table table-striped table-bordered" id="taxes">
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="row col-6 flexbox-container" id="create-tax" style="display: none;">
+        <div class="col-12">
+            <div class="col-12 box-shadow-2 p-0">
+                <div class="card border-grey border-lighten-3 p-0 m-0">
+                    <div class="card-header border-0 p-0 d-flex flex-row-reverse">
+                        <a data-action="close-create-form" class="btn bg-transparent"><i class="fa fa-window-close font-large-2 text-danger"></i></a>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <form class="form-horizontal d-flex align-items-center justify-content-center" action="{{ url_for(request.endpoint) }}" method="post" role="form" novalidate>
+                                <div class="row" style="width: 100%;">
+                                    {{ form.csrf_token }}
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            <label for="taxtype">Tax Type</label>
+                                            {{ form.taxtype(class_="form-control", placeholder="Tax Name") }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            {{ form.name(class_="form-control", placeholder="Tax Name") }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            {{ form.percentage(class_="form-control", placeholder="Tax Percentage") }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 d-flex align-items-center justify-content-center">
+                                        <button id="save" name="save" type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+    $(document).ready(function() {
+        $('a[data-action="create-tax"]').on('click', function () {
+            $("#main-content").removeClass('col-12').addClass('col-6');
+            $("#create-tax").show();
+            $('a[data-action="create-edit"]').hide();
+        });
+
+        $('a[data-action="close-create-form"]').on('click', function () {
+            $("#create-tax").hide();
+            $("#main-content").addClass('col-12').removeClass('col-6');
+            $('a[data-action="create-edit"]').show();
+        });
+    });
+
+    $(document).ready(function() {
+        var table = $('#taxes').DataTable({
+            ajax: "{{url_for('masters.getalltaxes')}}",
+            lengthMenu: [[100, 50, 25, 10, -1], [100, 50, 25, 10, "All"]],
+            columns: [
+                { 
+                    title: "Tax Type",
+                    data: 'taxtype'
+                },
+                { 
+                    title: "Tax Name",
+                    data: 'name'
+                },
+                { 
+                    title: "Tax Percentage",
+                    data: 'percentage'
+                }
+            ],
+            bAutoWidth: false,
+            initComplete: function () {
+                // Filter Type
+                var column_Type = this.api().column(0)
+                var div_Type = $('<div class="dataTables_length" id="taxes_Type" style="margin-left: 10px;"><label></label></div>')
+                .appendTo($("#taxes_wrapper #taxes_length").parent())
+                var select_Type = $('<select name="taxes_Type" aria-controls="taxes" class="custom-select custom-select-sm form-control form-control-sm"><option value="">All Types</option></select>')
+                .appendTo(div_Type)
+                .on('change', function () { 
+                    column_Type
+                    .search( $(this).val() )
+                    .draw();
+                });
+
+                column_Type.data().unique().sort().each( function ( d, j ) {
+                    select_Type.append( '<option value="'+d+'">'+d+'</option>' );
+                } );
+            }
+        });
+    } );
+
+</script>
+
+{% endblock %}

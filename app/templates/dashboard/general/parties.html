@@ -1,0 +1,447 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block pagecontent %}
+
+{# {% for field, error in form.errors.items() %}
+{% for e in error %} #}
+<!-- <div class="alert bg-danger alert-icon-left alert-dismissible mb-2"
+    role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <strong>{{ field }}</strong> {{ e }}
+</div> -->
+{# {% endfor %}
+{% endfor %} #}
+
+<div class="row">
+    <section class="row col-12 flexbox-container" id="main-content">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="content-header-title mb-0">Parties</h3>
+                    <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="add-item" data-params="new" class="btn bg-transparent"><i class="fa fa-plus-circle font-large-2 text-primary"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                        <table class="table table-striped table-bordered" id="parties">
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="row col-6 flexbox-container" id="item-form" style="display: none;">
+        <div class="col-12 ">
+            <div class="col-12 box-shadow-2 p-0">
+                <div class="card border-grey border-lighten-3 p-0 m-0">
+                    <div class="card-header mb-1">
+                        <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="close-form" class="btn bg-transparent"><i class="fa fa-window-close font-large-2 text-danger"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <form class="form-horizontal d-flex align-items-center justify-content-center" action="{{ url_for(request.endpoint) }}" method="post" role="form" novalidate>
+                                <div class="row" style="width: 100%;">
+                                    {{ form.csrf_token }}
+                                    {{ form.id }}
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            {{ form.role.label }}
+                                            {{ form.role(class_="form-control", placeholder=form.role.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            {{ form.branch.label }}
+                                            {{ form.branch(class_="form-control", placeholder=form.branch.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            {{ form.group.label }}
+                                            {{ form.group(class_="form-control", placeholder=form.group.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            {{ form.status.label }}
+                                            {{ form.status(class_="form-control", placeholder=form.status.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <div class="controls position-relative">
+                                                {% for subfield in form.category %}
+                                                <div class="d-inline-block custom-control custom-radio mr-1">
+                                                    {{ subfield(class_="custom-control-input") }}
+                                                    {{ subfield.label(class_="custom-control-label") }}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group custom-control custom-checkbox">
+                                            {{ form.whatsapp(class_="custom-control-input", checked=true) }}
+                                            {{ form.whatsapp.label(class_="custom-control-label") }}
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            {{ form.fullname(class_="form-control", placeholder=form.fullname.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-6" style="display: none;">
+                                        <div class="form-group">
+                                            {{ form.companyname(class_="form-control", placeholder=form.companyname.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.email(class_="form-control", placeholder=form.email.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.mobilenumber(class_="form-control", placeholder=form.mobilenumber.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.gstin(class_="form-control", placeholder=form.gstin.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.pincode(class_="form-control", placeholder=form.pincode.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.state(class_="form-control", placeholder=form.state.label.text, readonly=true) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            {{ form.city(class_="form-control", placeholder=form.city.label.text, readonly=true) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            {{ form.billingaddress(class_="form-control", placeholder=form.billingaddress.label.text) }}
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-4">
+                                        <div class="form-group">
+                                            {#{ form.brand(class_="form-control", placeholder=form.brand.label.text) }#}
+                                        </div>
+                                    </div> -->
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            {{ form.openingbalance(class_="form-control", placeholder=form.openingbalance.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <input id="{{ form.openingbalancedate.id }}" name="{{ form.openingbalancedate.name }}" class="form-control date-inputmask" type="text" placeholder="{{ form.openingbalancedate.label.text }}" data-inputmask="'alias': 'datetime','inputFormat': 'dd/mm/yyyy'" value="{{ form.openingbalancedate.default }}">
+                                        </div>
+                                    </div>
+                                    {% for my_item in brands_data %}
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="{{my_item}}" name="{{my_item}}" placeholder="{{ my_item | get_brand_label }}">
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="form-group col-12 d-flex align-items-center justify-content-center pb-0 mb-0">
+                                        <button id="save" name="save" type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(function() {
+
+        $('.skin-flat input').iCheck({
+            checkboxClass: 'icheckbox_flat-blue'
+        });
+
+        $("#whatsapp").change(function(){
+			if($(this).prop("checked") == true){
+                $("#whatsapp").val(true);
+            }
+            else if($(this).prop("checked") == false){
+                $("#whatsapp").val(false);
+            }
+		});
+
+        $("input[type=radio][name={{ form.category.name }}]").change(function () {
+            if (this.value == 'individual') {
+                $("#{{ form.fullname.id }}").parents().eq(1).removeClass("col-6").addClass("col-12");
+                $("#{{ form.companyname.id }}").parents().eq(1).hide();
+            }
+            else {
+                $("#{{ form.fullname.id }}").parents().eq(1).removeClass("col-12").addClass("col-6");
+                $("#{{ form.companyname.id }}").parents().eq(1).show();
+            }
+        });
+
+        var table = $('#parties').DataTable({
+            ajax: "{{url_for('general.getallparties')}}",
+            lengthMenu: [[100, 50, 25, 10, -1], [100, 50, 25, 10, "All"]],
+            columns: [
+                {
+                    title: "User Code",
+                    data: 'uid',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Name",
+                    data: 'category',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        console.log(full);
+                        if (data === 'individual') {
+                            return full['fullname'];
+                        } else {
+                            return full['companyname'];
+                        }
+                    }
+                },
+                {
+                    title: "Mobile Number",
+                    data: 'mobilenumber',
+                    className: 'dt-center'
+                },
+                {
+                    title: "GSTIN",
+                    data: 'gstin',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Branch",
+                    data: 'branch',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return data['code'];
+                    }
+                },
+                {
+                    title: "Status",
+                    data: 'status',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Balance",
+                    data: 'openingbalance',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Category",
+                    data: 'category',
+                    className: 'dt-center',
+                    visible: false
+                },
+                {
+                    title: "Role",
+                    data: 'role',
+                    className: 'dt-center',
+                    visible: false
+                },
+                {
+                    title: "Group",
+                    data: "group",
+                    className: 'dt-center',
+                    visible: false,
+                    render: function ( data, type, full, meta ) {
+                        return data['name'];
+                    }
+                },
+                {
+                    title: "",
+                    data: 'id',
+                    width: '110px',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return '<a data-action="edit-item" data-params="'+data+'" class="btn btn-sm btn-outline-success"><i class="fa fa-pencil-square-o"></i> Edit</a>';
+                    }
+                }
+            ],
+            bAutoWidth: false,
+            initComplete: function () {
+                // Filter category
+                var column_category = this.api().column(-4)
+                var div_category = $('<div class="dataTables_length" id="parties_category" style="margin-left: 10px;"><label></label></div>')
+                .appendTo($("#parties_wrapper #parties_length").parent())
+                var select_category = $('<select name="parties_category" aria-controls="parties" class="custom-select custom-select-sm form-control form-control-sm"><option value="">All Category</option></select>')
+                .appendTo(div_category)
+                .on('change', function () { 
+                    column_category
+                    .search( $(this).val() )
+                    .draw();
+                });
+
+                column_category.data().unique().sort().each( function ( d, j ) {
+                    select_category.append( '<option value="'+d+'">'+d+'</option>' );
+                } );
+
+                // Filter role
+                var column_Role = this.api().column(-3)
+                var div_Role = $('<div class="dataTables_length" id="parties_Role" style="margin-left: 10px;"><label></label></div>')
+                .appendTo($("#parties_wrapper #parties_length").parent())
+                var select_Role = $('<select name="parties_Role" aria-controls="parties" class="custom-select custom-select-sm form-control form-control-sm"><option value="">All Role</option></select>')
+                .appendTo(div_Role)
+                .on('change', function () { 
+                    column_Role
+                    .search( $(this).val() )
+                    .draw();
+                });
+
+                column_Role.data().unique().sort().each( function ( d, j ) {
+                    select_Role.append( '<option value="'+d+'">'+d+'</option>' );
+                } );
+
+                // Filter Status
+                var column_Status = this.api().column(-6)
+                var div_Status = $('<div class="dataTables_length" id="parties_Status" style="margin-left: 10px;"><label></label></div>')
+                .appendTo($("#parties_wrapper #parties_length").parent())
+                var select_Status = $('<select name="parties_Status" aria-controls="parties" class="custom-select custom-select-sm form-control form-control-sm"><option value="">All Status</option></select>')
+                .appendTo(div_Status)
+                .on('change', function () { 
+                    column_Status
+                    .search( $(this).val() )
+                    .draw();
+                });
+
+                column_Status.data().unique().sort().each( function ( d, j ) {
+                    select_Status.append( '<option value="'+d+'">'+d+'</option>' );
+                } );
+
+                // Filter Group
+                var column_Group = this.api().column(-2)
+                var div_Group = $('<div class="dataTables_length" id="parties_Group" style="margin-left: 10px;"><label></label></div>')
+                .appendTo($("#parties_wrapper #parties_length").parent())
+                var select_Group = $('<select name="parties_Group" aria-controls="parties" class="custom-select custom-select-sm form-control form-control-sm"><option value="">All Group</option></select>')
+                .appendTo(div_Group)
+                .on('change', function () { 
+                    column_Group
+                    .search( $(this).val() )
+                    .draw();
+                });
+
+                column_Group.data().unique().sort().each( function ( d, j ) {
+                    if(d['name'] !== "")
+                        select_Group.append( '<option value="'+d['name']+'">'+d['name']+'</option>' );
+                } );
+
+                $("#parties tbody tr").css('cursor', 'pointer');
+            }
+        });
+
+        $('a[data-action="add-item"]').on('click', function () {
+            var data = $(this).data('params');
+            $("#main-content").removeClass('col-12').addClass('col-6');
+            $("#item-form").show();
+            $('a[data-action="add-item"]').hide();
+            $("#id").val(data);
+            $("#parties_wrapper #parties_filter").parents().eq(1).hide()
+            table.columns([2,4,5,6,-1]).visible(false);
+        });
+
+        $('#parties').on('click', 'a[data-action="edit-item"]', function() {
+            var data = $(this).data('params');
+            $("#main-content").removeClass('col-12').addClass('col-6');
+            $("#item-form").show();
+            $('a[data-action="add-item"]').hide();
+            $("#id").val(data);
+            $("#parties_wrapper #parties_filter").parents().eq(1).hide()
+            table.columns([2,4,5,6,-1]).visible(false);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('general.getpartydetails') }}",
+                data: { id: $(this).data('params') },
+                dataType: "json",
+                success: function (data) {
+                    $.each(data, function(k,v) {
+                        if (k !== 'category')
+                            $('#'+k).val(v)
+                    });
+                    $("#whatsapp").attr("checked",data['whatsapp']);
+                    if (data['category'] == 'individual') {
+                        $('#category-0').prop('checked', true)
+                        $("#{{ form.fullname.id }}").parents().eq(1).removeClass("col-6").addClass("col-12");
+                        $("#{{ form.companyname.id }}").parents().eq(1).hide();
+                    }
+                    else {
+                        $('#category-1').prop('checked', true)
+                        $("#{{ form.fullname.id }}").parents().eq(1).removeClass("col-12").addClass("col-6");
+                        $("#{{ form.companyname.id }}").parents().eq(1).show();
+                    }
+                }
+            });
+        });
+
+        $('a[data-action="close-form"]').on('click', function () {
+            $("#item-form").hide();
+            $("#main-content").addClass('col-12').removeClass('col-6');
+            $('a[data-action="add-item"]').show();
+            $("#id").val('');
+            $("#parties_wrapper #parties_filter").parents().eq(1).show()
+            table.columns([2,4,5,6,-1]).visible(true);
+        });
+
+        $("#{{ form.pincode.id }}").on("input", function () {
+            if (this.value.length == 6) {
+                $.ajax({
+                    type: 'POST',
+                    url: "/api/get-pincode-details/",
+                    data: { pincode: $("#{{ form.pincode.id }}").val() },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data['status'] == "success") {
+                            $("#{{ form.state.id }}").val(data["state"]);
+                            $("#{{ form.city.id }}").val(data["city"]);
+                        } else {
+                            alert("Invalid Pincode");
+                            $("#{{ form.state.id }}").val("");
+                            $("#{{ form.city.id }}").val("");
+                        }
+                    }
+                });
+            }
+        });
+
+        // $('#parties tbody').on( 'click', 'tr td:not(:eq(-1))', function () {
+        //     window.open("{#{url_for('general.getallparties')}#}"+table.row(this).data()['uid']+"/",'_self');
+        // } );
+
+    } );
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "bootstrap/base.html" %}
+
+{% block html_attribs %} class="loading" lang="en" data-textdirection="ltr"{% endblock %}
+
+{% block title %}Signin - Paras Doors{% endblock %}
+
+{% block metas %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="author" content="Hacksify">
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/vendors.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/spinner/jquery.bootstrap-touchspin.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/icheck/icheck.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/toggle/switchery.min.css')}}">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap-extended.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/colors.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/components.css')}}">
+    <!-- END: Theme CSS-->
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/menu/menu-types/vertical-menu-modern.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/colors/palette-gradient.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/forms/validation/form-validation.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/forms/switch.css')}}">
+    <!-- END: Page CSS-->
+
+    <!-- BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='assets/css/style.css')}}">
+    <!-- END: Custom CSS-->
+{% endblock %}
+    
+{% block body_attribs %} class="vertical-layout vertical-menu-modern 1-column  bg-full-screen-image menu-collapsed blank-page blank-page" data-open="click" data-menu="vertical-menu-modern" data-col="1-column"{% endblock %}
+
+{% block content %}
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body">
+                <section class="row flexbox-container">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="col-lg-4 col-md-8 col-10 box-shadow-2 p-0">
+                            <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
+                                <div class="card-header border-0 pb-0">
+                                    <div class="card-title text-center">
+                                        <img src="{{url_for('static', filename='assets/images/logo/logo-auth.png')}}" alt="branding logo">
+                                    </div>
+                                    <h6 class="card-subtitle line-on-side text-center font-medium-2 pt-2 purple lighten-2"><span>Sign In</span></h6>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-body">
+                                        <div>
+                                            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                                                {% if errors %}
+                                                    {% for error in errors %}
+                                                        <div class="alert bg-danger alert-icon-left alert-dismissible mb-2" role="alert">
+                                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                                <span aria-hidden="true">×</span>
+                                                            </button>
+                                                            <strong>Oh snap!</strong> {{ error }}
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endwith %}
+                                            {% for field, error in form.errors.items() %}
+                                                {% for e in error %}
+                                                <div class="alert bg-danger alert-icon-left alert-dismissible mb-2" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                    <strong>{{ field }}</strong> {{ e }}
+                                                </div>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </div>
+
+                                        <form class="form-horizontal" action="." method="post" role="form" novalidate>
+                                            <div class="row">
+                                                {{ form.csrf_token }}
+                                                <div class="form-group col-12">
+                                                    <div class="controls position-relative has-icon-left">
+                                                        {{ form.loginid(class_="form-control", placeholder="Enter Login Id / Mobile Number") }}
+                                                        <div class="form-control-position">
+                                                            <i class="feather icon-user"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <div class="controls position-relative has-icon-left">
+                                                        {{ form.password(class_="form-control", placeholder="Enter Password", minlength="8") }}
+                                                        <div class="form-control-position">
+                                                            <i class="fa fa-key"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <a href="{{url_for('auth.forgotpassword')}}" class="card-link">Forgot Password?</a>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <button id="signin" name="signin" type="submit" class="btn btn-outline-primary btn-block"><i class="feather icon-unlock"></i> Login</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- END: Content-->
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+    <!-- BEGIN: Vendor JS-->
+    <script src="{{url_for('static', filename='app-assets/vendors/js/vendors.min.js')}}"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{{url_for('static', filename='app-assets/vendors/js/forms/spinner/jquery.bootstrap-touchspin.js')}}"></script>
+    <script src="{{url_for('static', filename='app-assets/vendors/js/forms/validation/jqBootstrapValidation.js')}}"></script>
+    <script src="{{url_for('static', filename='app-assets/vendors/js/forms/icheck/icheck.min.js')}}"></script>
+    <script src="{{url_for('static', filename='app-assets/vendors/js/forms/toggle/switchery.min.js')}}"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="{{url_for('static', filename='app-assets/js/core/app-menu.js')}}"></script>
+    <script src="{{url_for('static', filename='app-assets/js/core/app.js')}}"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="{{url_for('static', filename='app-assets/js/scripts/forms/validation/form-validation.js')}}"></script>
+    <!-- END: Page JS-->
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "bootstrap/base.html" %}
+
+{% block html_attribs %} class="loading" lang="en" data-textdirection="ltr"{% endblock %}
+
+{% block metas %}
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<meta name="author" content="Hacksify">
+{% endblock %}
+
+{% block title %}Paras Doors{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/vendors.min.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap-extended.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/colors.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/components.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/menu/menu-types/vertical-menu-modern.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/colors/palette-gradient.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='assets/css/style.css')}}">
+
+<!-- icheck -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/icheck/icheck.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/icheck/custom.css')}}">
+<!-- END: icheck -->
+
+<!-- Validators CSS -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/forms/validation/form-validation.css')}}">
+<!-- END: Validators -->
+
+<!-- toastr -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/extensions/toastr.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/extensions/toastr.css')}}">
+<!-- END: toastr -->
+
+<!-- sweetalert2 -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/animate/animate.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/extensions/sweetalert2.min.css')}}">
+<!-- END: sweetalert2 -->
+
+<!-- DataTabels -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/tables/datatable/datatables.min.css')}}">
+<!-- END: DataTabels -->
+
+<!-- palette-gradient -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/colors/palette-gradient.css')}}">
+<!-- END: palette-gradient -->
+
+<!-- checkboxes-radios -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/forms/checkboxes-radios.css')}}">
+<!-- END: checkboxes-radios -->
+{% endblock %}
+
+{% block body_attribs %} class="vertical-layout vertical-menu-modern 2-columns menu-collapsed fixed-navbar" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns"{% endblock %}
+
+{% block content %}
+<!-- Top Navbar -->
+{% include "base/top-navbar.html" %}
+
+<!-- Side Navbar -->
+{% include "base/side-navbar.html" %}
+
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+    <div class="content-wrapper">
+        <div class="content-header row">
+            <div class="content-header-left col-md-6 col-12 mb-2">
+                <h3 class="content-header-title mb-0">{% block pagetitle %}Page Title{% endblock %}</h3>
+            </div>
+        </div>
+        <div class="content-body">
+            {% block pagecontent %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+<!-- END: Content-->
+
+<!-- Footer -->
+{% include "base/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('static', filename='app-assets/vendors/js/vendors.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/core/app-menu.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/core/app.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/customizer.js')}}"></script>
+
+<!-- icheck -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/forms/icheck/icheck.min.js')}}"></script>
+<!-- END: icheck -->
+
+<!-- toastr -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/extensions/toastr.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/extensions/toastr.js')}}"></script>
+<script>
+    $(document).ready(function () {
+        {{ get_flashed_messages(category_filter=["error"]) | tojson }}.forEach(element => {
+            toastr.error(element,"ERROR", {"showMethod": "fadeIn", "hideMethod": "fadeOut", timeOut: 0});
+        });
+        {{ get_flashed_messages(category_filter=["warning"]) | tojson }}.forEach(element => {
+            toastr.warning(element,"WARNING", {"showMethod": "fadeIn", "hideMethod": "fadeOut", timeOut: 0});
+        });
+        {{ get_flashed_messages(category_filter=["info"]) | tojson }}.forEach(element => {
+            toastr.info(element,"INFO", {"showMethod": "fadeIn", "hideMethod": "fadeOut", timeOut: 0});
+        });
+        {{ get_flashed_messages(category_filter=["success"]) | tojson }}.forEach(element => {
+            toastr.success(element,"SUCCESS", {"showMethod": "fadeIn", "hideMethod": "fadeOut", timeOut: 5000});
+        });
+    });
+</script>
+<!-- END: toastr -->
+
+<!-- sweetalert2 -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/extensions/sweetalert2.all.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/vendors/js/extensions/polyfill.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/extensions/sweet-alerts.js')}}"></script>
+<!-- END: sweetalert2 -->
+
+<!-- DataTabels -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/tables/datatable/datatables.min.js')}}"></script>
+<!-- END: DataTabels -->
+
+<!-- validation -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/forms/validation/jqBootstrapValidation.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/forms/validation/form-validation.js')}}"></script>
+<!-- END: validation -->
+
+<!-- Input Mask -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/forms/extended/inputmask/jquery.inputmask.bundle.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/forms/extended/form-inputmask.js')}}"></script>
+<!-- END: Input Mask -->
+{% endblock %}

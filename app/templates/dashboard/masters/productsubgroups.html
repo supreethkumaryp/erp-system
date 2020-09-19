@@ -1,0 +1,158 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block pagetitle %}{% endblock %}
+{% block pagecontent %}
+<div class="row">
+    <section class="row col-12 flexbox-container" id="main-content">
+        <div class="col-12">
+            <div class="card border-grey border-lighten-3 p-0 m-0">
+                <div class="card-header">
+                    <h3 class="content-header-title mb-0">Product Subgroups</h3>
+                    <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a data-action="create-product-sub-group" data-params="new" class="btn bg-transparent"><i class="fa fa-plus-circle font-large-2 text-primary"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="card-body card-dashboard">
+                        <table class="table table-striped table-bordered" id="product-sub-groups">
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="row col-6 flexbox-container" id="create-edit-product-sub-group" style="display: none;">
+        <div class="col-12">
+            <div class="col-12 box-shadow-2 p-0">
+                <div class="card border-grey border-lighten-3 p-0 m-0">
+                    <div class="card-header mb-1">
+                        <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                        <div class="heading-elements">
+                            <ul class="list-inline mb-0">
+                                <li><a data-action="close-form" class="btn bg-transparent"><i class="fa fa-window-close font-large-2 text-danger"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body card-dashboard">
+                            <form class="form-horizontal d-flex align-items-center justify-content-center" action="{{ url_for(request.endpoint) }}" method="post" role="form" novalidate>
+                                <div class="row" style="width: 100%;">
+                                    {{ form.csrf_token }}
+                                    {{ form.id }}
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            {{ form.productgroup.label }}
+                                            {{ form.productgroup(class_="form-control", placeholder=form.productgroup.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            {{ form.code(class_="form-control", placeholder=form.code.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <div class="controls position-relative">
+                                            {{ form.name(class_="form-control", placeholder=form.name.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-12 d-flex align-items-center justify-content-center">
+                                        <button id="save" name="save" type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script>
+    $(document).ready(function() {
+        var table = $('#product-sub-groups').DataTable({
+            ajax: "{{url_for('masters.getallproductsubgroups')}}",
+            lengthMenu: [[100, 50, 25, 10, -1], [100, 50, 25, 10, "All"]],
+            columns: [
+                { 
+                    title: "Product Subgroup Code",
+                    data: 'code',
+                    className: 'dt-center',
+                },
+                { 
+                    title: "Product Subgroup Name",
+                    data: 'name',
+                    className: 'dt-center',
+                },
+                {
+                    title: "Product Group",
+                    data: 'productgroup',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return data['name'];
+                    }
+                },
+                {
+                    title: "",
+                    data: 'id',
+                    width: '110px',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return '<a data-action="edit-product-sub-group" data-params="'+data+'" class="btn btn-sm btn-outline-success"><i class="fa fa-pencil-square-o"></i> Edit</a>';
+                    }
+                }
+            ],
+            bAutoWidth: false
+        });
+
+        $('a[data-action="create-product-sub-group"]').on('click', function () {
+            var data = $(this).data('params');
+            $("#main-content").removeClass('col-12').addClass('col-6');
+            $("#create-edit-product-sub-group").show();
+            $('a[data-action="create-product-sub-group"]').hide();
+            $("#id").val(data);
+            table.columns(-1).visible(false);
+        });
+
+        $('#product-sub-groups').on('click', 'a[data-action="edit-product-sub-group"]', function(){
+            var data = $(this).data('params');
+            $("#main-content").removeClass('col-12').addClass('col-6');
+            $("#create-edit-product-sub-group").show();
+            $('a[data-action="create-product-sub-group"]').hide();
+            $("#id").val(data);
+            table.columns(-1).visible(false);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('masters.getproductsubgroup') }}",
+                data: { id: $(this).data('params') },
+                dataType: "json",
+                success: function (data) {
+                    $.each(data, function(k,v) {
+                        $('#'+k).val(v)
+                    });
+                }
+            });
+        });
+
+        $('a[data-action="close-form"]').on('click', function () {
+            $("#create-edit-product-sub-group").hide();
+            $("#main-content").addClass('col-12').removeClass('col-6');
+            $('a[data-action="create-product-sub-group"]').show();
+            $("#id").val('');
+            table.columns(-1).visible(true);
+        });
+
+    });
+</script>
+
+{% endblock %}

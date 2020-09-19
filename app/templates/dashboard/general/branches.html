@@ -1,0 +1,187 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block pagetitle %}Branches{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+    {% for branch in branches %}
+    <div class="col-md-4 col-sm-12">
+        <div class="card">
+            <div class="card-header card-head-inverse bg-primary">
+                <h4 class="card-title font-medium-3">{{ branch.name }}</h4>
+                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                <div class="heading-elements">
+                    <ul class="list-inline mb-0">
+                        <li><a data-action="collapse" class="d-none d-lg-block"><i class="feather icon-minus"></i></a></li>
+                        <li class="text-primary"><a data-action="edit" data-params="{{ branch.code }}"><i class="feather icon-edit"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-content collapse show" aria-expanded="true">
+                <div class="card-body">
+                    <p class="card-text"><span class="text-primary text-uppercase"><strong>Branch Code:</strong></span> {{ branch.code }}</p>
+                    <p class="card-text"><span class="text-primary text-uppercase"><strong>Address:</strong></span></p>
+                    <p class="card-text">{{ branch.address }}<br>{{ branch.city }}, {{ branch.state }} - {{ branch.pincode }}</p>
+                    <p class="card-text"><span class="text-primary text-uppercase"><strong>Phone No:</strong></span> {{ branch.phonenumber | join(', ') }}</p>
+                    <p class="card-text"><span class="text-primary text-uppercase"><strong>GSTIN:</strong></span> {{ branch.gstin }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Add New -->
+    <div class="col-md-4 col-sm-12 align-items-center d-flex justify-content-center">
+        <a href="#" data-toggle="modal" data-target="#branchmodal" onclick='document.getElementById("branch").reset();'>
+        <div class="card box-shadow-0 bg-transparent" style="border: 2px dashed; border-radius: 15px;">
+            <div class="card-content collapse show" aria-expanded="true">
+                <div class="card-body text-center" style="padding: 40px; padding-left: 120px; padding-right: 120px;">
+                    <p class="card-text" style="font-size: 48px;"><i class="feather icon-plus-circle"></i></p>
+                    <p class="card-text"><span class="text-primary text-uppercase"><strong>Add New Branch</strong></span></p>
+                </div>
+            </div>
+        </div>
+        </a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade text-left" id="branchmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary white">
+                    <h4 class="modal-title text-uppercase" id="myModalLabel8">Branch</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="form-horizontal" id="branch" action="." method="post" role="form">
+                <div class="modal-body">
+                    {{ form.csrf_token }}
+                    {{ form.id() }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.code) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.name) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.gstregtype) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.gstin) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.phonenumber) }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form_field(form.email) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form_field(form.address) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form_field(form.pincode) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form_field(form.state) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form_field(form.city) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Branch</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    "use strict";
+    $(document).ready(function () {
+        $("#{{ form.pincode.id }}").on("input", function () {
+            if (this.value.length == 6) {
+                $.ajax({
+                    type: 'POST',
+                    url: "/api/get-pincode-details/",
+                    data: { pincode: $("#{{ form.pincode.id }}").val() },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data['status'] == "success") {
+                            $("#{{ form.state.id }}").val(data["state"]);
+                            $("#{{ form.city.id }}").val(data["city"]);
+                        } else {
+                            alert("Invalid Pincode");
+                            $("#{{ form.state.id }}").val("");
+                            $("#{{ form.city.id }}").val("");
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+    (function (window, document, $) {
+        'use strict';
+        
+        // Edit
+        $('a[data-action="edit"]').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: "/dashboard/get-branch-details/",
+                data: { code: $(this).data('params') },
+                dataType: "json",
+                success: function (data) {
+                    $("#branchmodal").modal('show');
+                    $.each(data, function(k,v) {
+                        $('#'+k).val(v)
+                    });
+                }
+            });
+        });
+
+    })(window, document, jQuery);
+</script>
+
+{% endblock %}

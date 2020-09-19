@@ -1,0 +1,94 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block html_attribs %} class="loading" lang="en" data-textdirection="ltr"{% endblock %}
+
+{% block title %}Error 401 - Paras Doors{% endblock %}
+
+{% block metas %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="author" content="Hacksify">
+{% endblock %}
+
+{% block styles %}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('.static', filename='app-assets/vendors/css/vendors.min.css')}}">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap.css')}}"> -->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/bootstrap-extended.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/colors.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/components.css')}}">
+    <!-- END: Theme CSS-->
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/menu/menu-types/vertical-menu-modern.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/core/colors/palette-gradient.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/pages/error.css')}}">
+    <!-- END: Page CSS-->
+
+    <!-- BEGIN: Custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='assets/css/style.css')}}">
+    <!-- END: Custom CSS-->
+{% endblock %}
+    
+{% block body_attribs %} class="vertical-layout vertical-menu-modern 1-column   menu-collapsed blank-page blank-page" data-open="click" data-menu="vertical-menu-modern" data-col="1-column"{% endblock %}
+
+{% block content %}
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            <div class="content-header row">
+            </div>
+            <div class="content-body">
+                <section class="flexbox-container">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="col-md-4 col-10 p-0">
+                            <div class="card-header bg-transparent border-0">
+                                <h2 class="error-code text-center mb-2">401</h2>
+                                <h3 class="text-uppercase text-center">ERROR 401 - UNAUTHORIZED ACCESS.</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="row py-2">
+                                    <a href="index.html" class="btn btn-primary btn-block"><i class="feather icon-home"></i> Home</a>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="row">
+                                    <p class="text-muted text-center col-12 py-1">© <span class="year"></span> <a href="/">Paras Doors </a>Created by Team </i> by <a href="https://hacksify.in/" target="_blank">Hacksify</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    <!-- END: Content-->
+{% endblock %}
+
+{% block scripts %}
+    <!-- BEGIN: Vendor JS-->
+    <script src="{{url_for('static', filename='vendors/js/vendors.min.js')}}"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{{url_for('static', filename='vendors/js/forms/validation/jqBootstrapValidation.js')}}"></script>
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="{{url_for('static', filename='js/core/app-menu.js')}}"></script>
+    <script src="{{url_for('static', filename='js/core/app.js')}}"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="{{url_for('static', filename='js/scripts/forms/form-login-register.js')}}"></script>
+    <!-- END: Page JS-->
+{% endblock %}
