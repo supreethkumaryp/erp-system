@@ -30,7 +30,7 @@
                             <span class="user-name">{{ current_user.fullname }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="#{#{url_for('dashboard.editprofile')}#}"><i class="feather icon-user"></i> Edit Profile</a>
+                            <a class="dropdown-item" href="{{url_for('dashboard.editprofile')}}"><i class="feather icon-user"></i> Edit Profile</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{url_for('auth.logout')}}"><i class="feather icon-power"></i> Logout</a>
                         </div>

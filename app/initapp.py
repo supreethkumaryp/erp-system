@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from app import db, jwt, bcrypt, login_manager, gst
 
 # Importing Schema
-from app.schema import Taxes, Colours, User
+from app.schema import Taxes, Colours, User, Wallet
 
 # Adding Taxes if not exist on init
 taxes = [0.00, 5.00, 12.00, 18.00, 28.00]
@@ -85,3 +85,15 @@ for key, value in colours.items():
             name=key,
             code=value
         ).save()
+
+if not Wallet.objects(name="sms"):
+    Wallet(
+        name="sms",
+        balance=0
+    ).save()
+
+if not Wallet.objects(name="whatsapp"):
+    Wallet(
+        name="whatsapp",
+        balance=0
+    ).save()

@@ -164,3 +164,8 @@ class Products(gj.Document):
     stock = IntField(default=0)
     status = BooleanField()
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
+
+class Wallet(db.Document):
+    meta = {"collection":"wallet"}
+    name = StringField()
+    balance = IntField(default=0)

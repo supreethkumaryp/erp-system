@@ -14,7 +14,6 @@ class EditUserInfoForm(FlaskForm):
     email = StringField("Email")
     mobilenumber = StringField("Mobile Number", validators=([InputRequired(message="Please Enter Valid Mobile Number")]))
     whatsapp = BooleanField("Send Msg in Whatsapp")
-    brand = StringField("Brand Label")
     gstin = StringField("GSTIN")
     communicationaddress = TextAreaField("Communication Address", validators=[InputRequired(message="Please Enter Address")])
     samebilladdress = BooleanField("Same As Billing Address")

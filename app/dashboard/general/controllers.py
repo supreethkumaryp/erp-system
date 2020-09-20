@@ -21,6 +21,9 @@ from app.schema import Branches, User, roles, userstatus, User_Groups, Products,
 # Importing User UID generator
 from app.auth.controller import getnextid
 
+# Importing API's
+from app.api.controller import sendSMS, checkSMSBalance
+
 general = Blueprint('general', __name__, url_prefix='/dashboard')
 
 def generate_password(length):
@@ -141,15 +144,19 @@ def parties():
             existing_user = User.objects(mobilenumber=form.mobilenumber.data).first()
 
             if existing_user is None:
+
+                if not checkSMSBalance(mode="sms"):
+                    flash("SMS Limit Exceeded", "error")
+                    return redirect(url_for('general.parties'))
+
                 password = generate_password(8)
-                print(password)
                 temp_labels = {}
                 for key in form.data.items():
                     if key[0].startswith('label_'):
                         temp_labels[key[0]] = key[1] if key[1] else "NA"
-
+                uid = str(form.city.data)[0:3].upper() + str(getnextid(form.city.data))
                 user = User(
-                    uid = str(form.city.data)[0:3].upper() + str(getnextid(form.city.data)),
+                    uid = uid,
                     role = int(form.role.data),
                     branch = Branches.objects(pk=form.branch.data).first().to_dbref() if form.branch.data else None,
                     category = form.category.data,
@@ -173,6 +180,10 @@ def parties():
                 ).save()
 
                 if user:
+                    MSG = "Hey {}, Welcome to Paras Doors.\r\nFrom now you can login to www.parasdoors.com using\r\nLogin ID: {} / {},\r\nPassword: {}".format(form.fullname.data, uid, form.mobilenumber.data, password)
+                    status = sendSMS(mobileNumber=form.mobilenumber.data, MSG=MSG, mode="sms")
+                    if not status:
+                        flash("Failed to Send SMS to User", "error")
                     flash("New User Added Successfully", "success")
                     return redirect(url_for('general.parties'))
                 
