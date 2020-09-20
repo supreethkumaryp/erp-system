@@ -138,6 +138,13 @@ class Product_Sub_Groups(gj.Document):
     productgroup = ReferenceField(Product_Groups, dbref=True, reverse_delete_rule=CASCADE)
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
 
+class ProductDesign(gj.Document):
+    meta = {"collection":"productdesign"}
+    code = StringField()
+    colour = ListField()
+    photo = StringField()
+    created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
+
 class Products(gj.Document):
     meta = {"collection":"products"}
     producttype = StringField()
@@ -160,7 +167,8 @@ class Products(gj.Document):
     sellingpricetype = StringField()
     costpricetype = StringField()
     discounttype = StringField()
-    photos = ListField()
+    # photos = ListField()
+    productdesign = ListField(field=ReferenceField(ProductDesign, dbref=True, reverse_delete_rule=NULLIFY))
     stock = IntField(default=0)
     status = BooleanField()
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
@@ -169,3 +177,4 @@ class Wallet(db.Document):
     meta = {"collection":"wallet"}
     name = StringField()
     balance = IntField(default=0)
+    created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))

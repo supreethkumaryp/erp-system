@@ -46,6 +46,7 @@ if not User.objects(uid="dev"):
         state="Karnataka",
         city="Chitradurga",
         pincode = 577501,
+        brand = json.dumps({}),
         openingbalance=0,
         status = 1
     ).save()
