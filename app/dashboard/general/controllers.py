@@ -164,6 +164,7 @@ def parties():
                     category = form.category.data,
                     group = User_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
                     companyname = form.companyname.data,
+                    userclass = form.userclass.data,
                     fullname = form.fullname.data,
                     password = bcrypt.generate_password_hash(password),
                     email = form.email.data if form.email.data else None,
@@ -208,6 +209,7 @@ def parties():
                     category = form.category.data,
                     group = User_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
                     companyname = form.companyname.data if form.category.data == "company" else "",
+                    userclass = form.userclass.data,
                     fullname = form.fullname.data,
                     email = form.email.data if form.email.data else None,
                     mobilenumber = form.mobilenumber.data,
@@ -239,7 +241,7 @@ def parties():
 @general.route('/get-all-parties/', methods=['GET', 'POST'])
 @login_required
 def getallparties():
-    users = User.objects(role__lte=current_user.role, status__ne=userstatus['deleted'], pk__ne=current_user.pk).only('uid','fullname','mobilenumber','gstin','openingbalance','category','role','status','branch','group','companyname')
+    users = User.objects(role__lte=current_user.role, status__ne=userstatus['deleted'], pk__ne=current_user.pk).only('uid','fullname','mobilenumber','gstin','openingbalance','category','role','status','branch','group','companyname', 'userclass')
     users = [json.loads(user.to_json(follow_reference=True)) for user in users]
     for index, user in enumerate(users):
         if 'group' not in user:
@@ -271,6 +273,7 @@ def getpartydetails():
         "state" : user['state'] if 'state' in user else "",
         "pincode" : user['pincode'] if 'pincode' in user else "",
         "openingbalance" : user['openingbalance'] if 'openingbalance' in user else "",
+        "userclass" : user['userclass'],
         "openingbalancedate" : datetime.fromtimestamp(float(user['openingbalancedate'])).strftime("%d/%m/%Y") if 'openingbalancedate' in user else "",
         "status" : user['status'] if 'status' in user else "",
         "whatsapp" : user['whatsapp'] if 'whatsapp' in user else False
@@ -348,6 +351,8 @@ def newproduct():
             costpricetype = form.costpricetype.data,
             discounttype = form.discounttype.data,
             productdesign = designsList,
+            seller = current_user.pk,
+            productclass = form.productclass.data,
             status = True
         ).save()
 
@@ -394,58 +399,83 @@ def editproduct():
         newdesignIDS = [design.designid.data for design in form.designs]
         for index, productDesignData in enumerate(product["productdesign"]):
             if productDesignData['id'] not in newdesignIDS:
-                # ProductDesign.objects(pk=productDesignData['id']).first().delete()
+                ProductDesign.objects(pk=productDesignData['id']).first().delete()
                 product["productdesign"].pop(index)
-                print(product["productdesign"])
-        # for design in form.designs:
-        #     try:
-        #         filename = str(form.barcode.data) + str(design.photo.name).split("-")[1] + "." + request.files[design.photo.name].filename.split(".")[-1]
-        #         filepath = os.path.join(os.path.join(app.root_path, 'static/assets/images/products'), filename)
-        #         image_data = request.files[design.photo.name].read()
-        #         open(filepath, 'wb').write(image_data)
-        #     except:
-        #         filepath = "None"
 
-        #     status = ProductDesign(
-        #         code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
-        #         name = design.designname.data,
-        #         colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data],
-        #         photo = filepath
-        #     ).save()
-        #     if(status):
-        #         designsList.append(status.to_dbref())
+        designsList = [ProductDesign.objects(pk=productItem['id']).first().to_dbref() for productItem in product["productdesign"]]
 
-        # product = Products(
-        #     producttype = form.producttype.data,
-        #     code = form.code.data,
-        #     barcode = form.barcode.data,
-        #     name = form.name.data,
-        #     brand = Brands.objects(pk=form.brand.data).first().to_dbref() if form.brand.data else None,
-        #     group = Product_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
-        #     subgroup = Product_Sub_Groups.objects(pk=form.subgroup.data).first().to_dbref() if form.subgroup.data else None,
-        #     tax = Taxes.objects(pk=form.tax.data).first().to_dbref() if form.tax.data else None,
-        #     cess = Taxes.objects(pk=form.cess.data).first().to_dbref() if form.cess.data else None,
-        #     unitofmeasure = Units.objects(pk=form.unitofmeasure.data).first().to_dbref() if form.unitofmeasure.data else None,
-        #     length = float(form.length.data),
-        #     width = float(form.width.data),
-        #     unit = form.unit.data,
-        #     sellingprice = float(form.sellingprice.data),
-        #     minstock = int(form.minstock.data),
-        #     costprice = float(form.costprice.data),
-        #     discountprice = float(form.discountprice.data),
-        #     sellingpricetype = form.sellingpricetype.data,
-        #     costpricetype = form.costpricetype.data,
-        #     discounttype = form.discounttype.data,
-        #     productdesign = designsList,
-        #     status = True
-        # ).save()
+        for design in form.designs:
+            if (design.designid.data):
+                # Existing Object
+                if request.files[design.photo.name].filename:
+                    filename = str(form.barcode.data) + str(design.photo.name).split("-")[1] + "." + request.files[design.photo.name].filename.split(".")[-1]
+                    filepath = os.path.join(os.path.join(app.root_path, 'static/assets/images/products'), filename)
+                    image_data = request.files[design.photo.name].read()
+                    open(filepath, 'wb').write(image_data)
 
-        # if product:
-        #     flash("New Product added Successfully", "success")
-        #     return redirect(url_for('general.products'))
+                    status = ProductDesign.objects(pk=design.designid.data).update(
+                        code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
+                        name = design.designname.data,
+                        colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data],
+                        photo = filepath
+                    )
+                else:
+                    status = ProductDesign.objects(pk=design.designid.data).update(
+                        code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
+                        name = design.designname.data,
+                        colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data]
+                    )
+            else:
+                # New Object
+                try:
+                    filename = str(form.barcode.data) + str(design.photo.name).split("-")[1] + "." + request.files[design.photo.name].filename.split(".")[-1]
+                    filepath = os.path.join(os.path.join(app.root_path, 'static/assets/images/products'), filename)
+                    image_data = request.files[design.photo.name].read()
+                    open(filepath, 'wb').write(image_data)
+                except:
+                    filepath = "None"
 
-        # flash("Failed to add Product","error")
-        # return redirect(url_for('general.products'))
+                status = ProductDesign(
+                    code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
+                    name = design.designname.data,
+                    colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data],
+                    photo = filepath
+                ).save()
+                if(status):
+                    designsList.append(status.to_dbref())
+
+        product = Products.objects(barcode = form.barcode.data).first().update(
+            producttype = form.producttype.data,
+            code = form.code.data,
+            barcode = form.barcode.data,
+            name = form.name.data,
+            brand = Brands.objects(pk=form.brand.data).first().to_dbref() if form.brand.data else None,
+            group = Product_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
+            subgroup = Product_Sub_Groups.objects(pk=form.subgroup.data).first().to_dbref() if form.subgroup.data else None,
+            tax = Taxes.objects(pk=form.tax.data).first().to_dbref() if form.tax.data else None,
+            cess = Taxes.objects(pk=form.cess.data).first().to_dbref() if form.cess.data else None,
+            unitofmeasure = Units.objects(pk=form.unitofmeasure.data).first().to_dbref() if form.unitofmeasure.data else None,
+            length = float(form.length.data),
+            width = float(form.width.data),
+            unit = form.unit.data,
+            sellingprice = float(form.sellingprice.data),
+            minstock = int(form.minstock.data),
+            costprice = float(form.costprice.data),
+            discountprice = float(form.discountprice.data),
+            sellingpricetype = form.sellingpricetype.data,
+            costpricetype = form.costpricetype.data,
+            discounttype = form.discounttype.data,
+            productdesign = designsList,
+            productclass = form.productclass.data,
+            status = True
+        )
+
+        if product:
+            flash("New Product added Successfully", "success")
+            return redirect(url_for('general.products'))
+
+        flash("Failed to add Product","error")
+        return redirect(url_for('general.products'))
 
     form.brand.choices = [(str(brand.pk),str(brand.name)) for brand in Brands.objects()]
     form.group.choices = [("","-- NA --")] + [(str(group.pk),str(group.name)) for group in Product_Groups.objects()]
@@ -461,33 +491,35 @@ def editproduct():
     for design in form.designs:
         design.colour.choices = [(str(col.pk),str(col.name)) for col in Colours.objects()]
 
-    
-    form.producttype.data = product["producttype"]
-    form.code.data = product["code"]
-    form.barcode.data = product["barcode"]
-    form.name.data = product["name"]
-    form.brand.data = product["brand"]["id"] if "brand" in product else ""
-    form.group.data = product["group"]["id"] if "group" in product else ""
-    form.subgroup.data = product["subgroup"]["id"] if "subgroup" in product else ""
-    form.tax.data = product["tax"]["id"] if "tax" in product else ""
-    form.cess.data = product["cess"]["id"] if "cess" in product else ""
-    form.unitofmeasure.data = product["unitofmeasure"]["id"] if "unitofmeasure" in product else ""
-    form.length.data = product["length"]
-    form.width.data = product["width"]
-    form.unit.data = product["unit"]
-    form.sellingprice.data = product["sellingprice"]
-    form.minstock.data = product["minstock"]
-    form.costprice.data = product["costprice"]
-    form.discountprice.data = product["discountprice"]
-    form.sellingpricetype.data = product["sellingpricetype"]
-    form.costpricetype.data = product["costpricetype"]
-    form.discounttype.data = product["discounttype"]
-    for index, productDesignData in enumerate(product["productdesign"]):
-        form.designs[index].designid.data = productDesignData['id']
-        form.designs[index].designname.data = productDesignData['name']
-        data = []
-        for color in productDesignData['colour']:
-            data.append(color['id'])
-        form.designs[index].colour.data = data
+    if not form.is_submitted():
+        form.producttype.data = product["producttype"]
+        form.code.data = product["code"]
+        form.barcode.data = product["barcode"]
+        form.name.data = product["name"]
+        form.brand.data = product["brand"]["id"] if "brand" in product else ""
+        form.group.data = product["group"]["id"] if "group" in product else ""
+        form.subgroup.data = product["subgroup"]["id"] if "subgroup" in product else ""
+        form.tax.data = product["tax"]["id"] if "tax" in product else ""
+        form.cess.data = product["cess"]["id"] if "cess" in product else ""
+        form.unitofmeasure.data = product["unitofmeasure"]["id"] if "unitofmeasure" in product else ""
+        form.length.data = product["length"]
+        form.width.data = product["width"]
+        form.unit.data = product["unit"]
+        form.sellingprice.data = product["sellingprice"]
+        form.minstock.data = product["minstock"]
+        form.costprice.data = product["costprice"]
+        form.discountprice.data = product["discountprice"]
+        form.sellingpricetype.data = product["sellingpricetype"]
+        form.costpricetype.data = product["costpricetype"]
+        form.discounttype.data = product["discounttype"]
+        form.productclass.data = product["productclass"]
+        
+        for index, productDesignData in enumerate(product["productdesign"]):
+            form.designs[index].designid.data = productDesignData['id']
+            form.designs[index].designname.data = productDesignData['name']
+            data = []
+            for color in productDesignData['colour']:
+                data.append(color['id'])
+            form.designs[index].colour.data = data
 
     return render_template('dashboard/general/edit-product.html',form=form)

@@ -95,7 +95,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            {{ form.userclass(class_="form-control", placeholder=form.userclass.label.text) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
                                         <div class="form-group custom-control custom-checkbox">
                                             {{ form.whatsapp(class_="custom-control-input", checked=true) }}
                                             {{ form.whatsapp.label(class_="custom-control-label") }}

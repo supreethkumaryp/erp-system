@@ -24,6 +24,12 @@ userstatus = {
     "deleted": 8
 }
 
+userClass = {
+    "Class_C" : "c", # 001
+    "Class_B" : "b", # 011
+    "Class_A" : "a"  # 111
+}
+
 Tax_Types = ['CGST', 'SGST', 'IGST', 'Cess', 'Composition', 'VAT']
 
 Product_Type = ['Goods','Service']
@@ -95,6 +101,7 @@ class User(UserMixin, gj.Document):
     status = IntField(default=userstatus['unverified'])
     otp = StringField(default=None)
     otp_sent_time = StringField(default=None)
+    userclass = StringField(default=userClass['Class_C'])
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
 
 class Units(gj.Document):
@@ -169,9 +176,11 @@ class Products(gj.Document):
     costpricetype = StringField()
     discounttype = StringField()
     # photos = ListField()
+    productclass = StringField(default=userClass['Class_C'])
     productdesign = ListField(field=ReferenceField(ProductDesign, dbref=True, reverse_delete_rule=DO_NOTHING))
     stock = IntField(default=0)
     status = BooleanField()
+    seller = ReferenceField(User, dbref=True, reverse_delete_rule=DO_NOTHING)
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
 
 class Wallet(db.Document):

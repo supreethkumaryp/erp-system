@@ -13,7 +13,7 @@
         <div class="col-12 box-shadow-2 p-0">
             <div class="card border-grey border-lighten-3 p-0 m-0">
                 <div class="card-header mb-1">
-                    <h4 class="card-title">Add New Product</h4>
+                    <h4 class="card-title">Edit Product</h4>
                     <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                     <div class="heading-elements">
                         <ul class="list-inline mb-0">
@@ -31,14 +31,21 @@
                                     {{ form.csrf_token }}
 
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-2">
                                             <div class="form-group">
                                                 {{ form.producttype.label }}
                                                 {{ form.producttype(class_="form-control", placeholder=form.producttype.label.text) }}
                                             </div>
                                         </div>
+
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                {{ form.productclass.label }}
+                                                {{ form.productclass(class_="form-control", placeholder=form.productclass.label.text) }}
+                                            </div>
+                                        </div>
     
-                                        <div class="col-4">
+                                        <div class="col-3">
                                             <div class="form-group">
                                                 {{ form.code.label }}
                                                 {{ form.code(class_="form-control", placeholder=form.code.label.text) }}

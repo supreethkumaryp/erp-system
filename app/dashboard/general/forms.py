@@ -5,10 +5,11 @@ from wtforms.validators import InputRequired, Email, Length, EqualTo, Email
 from wtforms.widgets import html5, html_params
 from flask_wtf.file import FileAllowed
 
-from app.schema import userstatus, roles, Product_Type, Product_Unit, Product_Price_Type, Discount_Type, Brands, Colours
+from app.schema import userstatus, roles, Product_Type, Product_Unit, Product_Price_Type, Discount_Type, Brands, Colours, userClass
 
 statuschoice = [(str(value),key.replace("_"," ").capitalize()) for key,value in userstatus.items()]
 roleschoice = [(str(value),key.replace("_"," ").capitalize()) for key,value in roles.items() if key != "developer"]
+userclasschoice = [(str(value),key.replace("_"," ")) for key,value in userClass.items()]
 producttypechoice = [(ptype.lower(),ptype) for ptype in Product_Type]
 productunitchoice = [(key,value) for key,value in Product_Unit.items()]
 productpricetypechoice = [(key,value) for key,value in Product_Price_Type.items()]
@@ -44,6 +45,7 @@ class PartyForm(FlaskForm):
     state = StringField("State", validators=[InputRequired(message="Please Enter State")])
     pincode = IntegerField("Pincode", validators=([InputRequired("Please Enter Pincode")]), widget=html5.NumberInput())
     # brand = StringField("Brand Label")
+    userclass = SelectField("User Class", choices=userclasschoice, default=userClass['Class_C'])
     openingbalance = StringField("Opening Balance")
     openingbalancedate = StringField("Opening Balance Date", default=datetime.date.today().strftime("%d/%m/%Y"))
     status = SelectField("User Status", choices=statuschoice, default=1)
@@ -77,5 +79,6 @@ class ProductForm(FlaskForm):
     costpricetype = SelectField(label="Cost Price Type", choices=productpricetypechoice)
     discounttype = SelectField(label="Discount Type", choices=discounttypechoice)
     designs = FieldList(FormField(DesignForm), min_entries=1)
+    productclass = SelectField("Product Class", choices=userclasschoice, default=userClass['Class_C'])
     addDesign = SubmitField(label="Add Design")
     removeDesign = SubmitField(label="Remove Design")
