@@ -1,0 +1,105 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block pagecontent %}
+<div class="row">
+    <section class="row col-12 flexbox-container" id="main-content">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="content-header-title mb-0">Products</h3>
+                    <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a href="{{ url_for('general.newproduct') }}" class="btn bg-transparent"><i class="fa fa-plus-circle font-large-2 text-primary"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content collapse show">
+                    <div class="card-body card-dashboard">
+                        <table class="table table-striped table-bordered" id="products">
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(function() {
+        var table = $('#products').DataTable({
+            ajax: "{{url_for('general.getallproducts')}}",
+            lengthMenu: [[100, 50, 25, 10, -1], [100, 50, 25, 10, "All"]],
+            columns: [
+                {
+                    title: "Bar Code",
+                    data: 'barcode',
+                    className: 'dt-center'
+                },
+                {
+                    title: "HSN",
+                    data: 'code',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Product Name",
+                    data: 'name',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Unit",
+                    data: 'unitofmeasure',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return data['name'];
+                    }
+                },
+                {
+                    title: "Selling Price",
+                    data: 'sellingprice',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Tax",
+                    data: 'tax',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        return data['name'];
+                    }
+                },
+                {
+                    title: "Discount",
+                    data: 'discountprice',
+                    className: 'dt-center'
+                },
+                {
+                    title: "Min Stock",
+                    data: 'minstock',
+                    className: 'dt-center'
+                },
+                {
+                    title: "",
+                    data: 'barcode',
+                    className: 'dt-center',
+                    render: function ( data, type, full, meta ) {
+                        
+                        return '<a href="/dashboard/edit-product/?barcode='+data+'" class="btn btn-sm btn-outline-success"><i class="fa fa-pencil-square-o"></i> Edit</a>';
+                    }
+                }
+            ],
+            bAutoWidth: false
+        });
+    });
+</script>
+{% endblock %}

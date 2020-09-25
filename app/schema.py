@@ -2,7 +2,7 @@ from datetime import datetime
 from pytz import timezone
 from app import db
 from flask_login import UserMixin
-from mongoengine import StringField, IntField, BooleanField, EmailField, UUIDField, IntField, DateTimeField, FloatField, ListField, ReferenceField, CASCADE, NULLIFY
+from mongoengine import StringField, IntField, BooleanField, EmailField, UUIDField, IntField, DateTimeField, FloatField, ListField, ReferenceField, CASCADE, NULLIFY, DO_NOTHING
 import mongoengine_goodjson as gj
 
 roles = {
@@ -141,6 +141,7 @@ class Product_Sub_Groups(gj.Document):
 class ProductDesign(gj.Document):
     meta = {"collection":"productdesign"}
     code = StringField()
+    name = StringField()
     colour = ListField()
     photo = StringField()
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))
@@ -168,7 +169,7 @@ class Products(gj.Document):
     costpricetype = StringField()
     discounttype = StringField()
     # photos = ListField()
-    productdesign = ListField(field=ReferenceField(ProductDesign, dbref=True, reverse_delete_rule=NULLIFY))
+    productdesign = ListField(field=ReferenceField(ProductDesign, dbref=True, reverse_delete_rule=DO_NOTHING))
     stock = IntField(default=0)
     status = BooleanField()
     created_at = StringField(default=str(datetime.now(timezone('Asia/Kolkata')).timestamp()))

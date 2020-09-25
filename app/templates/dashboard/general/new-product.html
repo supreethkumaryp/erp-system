@@ -1,0 +1,282 @@
+{% extends "base/base.html" %}
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block styles %}
+{{super()}}
+{% endblock %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block pagecontent %}
+<section class="row col-12 flexbox-container" id="item-form">
+    <div class="col-12 ">
+        <div class="col-12 box-shadow-2 p-0">
+            <div class="card border-grey border-lighten-3 p-0 m-0">
+                <div class="card-header mb-1">
+                    <h4 class="card-title">Add New Product</h4>
+                    <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
+                    <div class="heading-elements">
+                        <ul class="list-inline mb-0">
+                            <li><a href="{{ url_for('general.products') }}" class="btn bg-transparent"><i class="fa fa-window-close font-large-2 text-danger"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="card-body card-dashboard">
+                        
+                        <form class="form-horizontal d-flex align-items-center justify-content-center" id="new-Product-Form" action="{{ url_for(request.endpoint) }}" method="POST" enctype="multipart/form-data">
+                            
+                            <div class="row" style="width: 100%;">
+                                <div class="col-12">
+                                    {{ form.csrf_token }}
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.producttype.label }}
+                                                {{ form.producttype(class_="form-control", placeholder=form.producttype.label.text) }}
+                                            </div>
+                                        </div>
+    
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.code.label }}
+                                                {{ form.code(class_="form-control", placeholder=form.code.label.text) }}
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="barcode" id="barcode" value="{{form.barcode.data}}">
+                                        <div class="col-4 d-flex align-items-center justify-content-center">
+                                            <div class="form-group">
+                                                <svg id="barcode_img"
+                                                    jsbarcode-format="auto"
+                                                    jsbarcode-value="{{form.barcode.data}}"
+                                                    jsbarcode-height=30></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                {{ form.name.label }}
+                                                {{ form.name(class_="form-control", placeholder=form.name.label.text) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.brand.label }}
+                                                {{ form.brand(class_="form-control", placeholder=form.brand.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.group.label }}
+                                                {{ form.group(class_="form-control", placeholder=form.group.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.subgroup.label }}
+                                                {{ form.subgroup(class_="form-control", placeholder=form.subgroup.label.text) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.tax.label }}
+                                                {{ form.tax(class_="form-control", placeholder=form.tax.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.cess.label }}
+                                                {{ form.cess(class_="form-control", placeholder=form.cess.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.minstock.label }}
+                                                {{ form.minstock(class_="form-control", placeholder=form.minstock.label.text) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                {{ form.unitofmeasure.label }}
+                                                {{ form.unitofmeasure(class_="form-control", placeholder=form.unitofmeasure.label.text) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                {{ form.length.label }}
+                                                {{ form.length(class_="form-control", placeholder=form.length.label.text) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                {{ form.width.label }}
+                                                {{ form.width(class_="form-control", placeholder=form.width.label.text) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="form-group">
+                                                {{ form.unit.label }}
+                                                {{ form.unit(class_="form-control", placeholder=form.unit.label.text) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-2 d-flex align-items-center justify-content-center font-weight-bold">
+                                            <span class="product-dimensions">0.00</span>&nbsp;Sq. Ft.
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.sellingprice.label }}
+                                                {{ form.sellingprice(class_="form-control", placeholder=form.sellingprice.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.costprice.label }}
+                                                {{ form.costprice(class_="form-control", placeholder=form.costprice.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.discountprice.label }}
+                                                {{ form.discountprice(class_="form-control", placeholder=form.discountprice.label.text) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.sellingpricetype(class_="form-control", placeholder=form.sellingpricetype.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.costpricetype(class_="form-control", placeholder=form.costpricetype.label.text) }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="form-group">
+                                                {{ form.discounttype(class_="form-control", placeholder=form.discounttype.label.text) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="subforms-container">
+                                        {% for subform in form.designs %}
+                                            <div class="subform row col-12 input-fields border border-light rounded ml-0 p-1 d-flex mb-1" id="designs-{{ loop.index0 }}-form" data-index="{{ loop.index0 }}">
+                                                <div class="col-12" id="container-label">
+                                                    <strong>{{ subform.label }}</strong>
+                                                </div>
+                                                <div class="row col-12">
+                                                    <div class="form-group col-4">
+                                                        {{ subform.designname(class_="form-control", placeholder=subform.designname.label.text) }}
+                                                    </div>
+                                                    <div class="form-group col-5">
+                                                        {{ subform.colour(class_="select2 form-control", placeholder=subform.colour.label.text) }}
+                                                    </div>
+                                                    <div class="form-group col-3 m-0">
+                                                        <div class="form-group">
+                                                            <div class="custom-file">
+                                                                {{ subform.photo(class_="custom-file-input") }}
+                                                                <label class="custom-file-label" for="{{ subform.photo.id }}">Choose file</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <!-- <button class="btn btn-primary mt-1" id="add" type="button"><i class="fa fa-plus"></i> Add Design</button> -->
+                                    {{ form.addDesign(class_="btn btn-primary mt-1 mr-1") }}
+                                    {{ form.removeDesign(class_="btn btn-danger mt-1") }}
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group col-12 d-flex align-items-center justify-content-center pb-0 mb-0 mt-1">
+                                        <button id="submit" name="submit" type="submit" class="btn btn-success">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{url_for('static', filename='assets/js/JsBarcode.all.min.js')}}"></script>
+
+<script>
+    JsBarcode("#barcode_img").init();
+</script>
+
+<script>
+    $('.custom-file input').change(function (e) {
+
+        if (e.target.files[0].type.match('image.*')) {
+            $(this).next('.custom-file-label').html(e.target.files[0].name);
+            document.getElementById('list').innerHTML = null;
+
+            var reader = new FileReader();
+
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    // Render thumbnail.
+                    var span = document.createElement('span');
+                    span.innerHTML = ['<img class="img-thumbnail" src="', e.target.result, '" title="', escape(theFile.name), '"/>'].join('');
+                    document.getElementById('list').insertBefore(span, null);
+                };
+            })(e.target.files[0]);
+
+            reader.readAsDataURL(e.target.files[0]);
+        } else {
+            console.log("Error File Type!")
+        }
+
+    });
+</script>
+
+<script>
+    function calc() {
+        var len = parseInt($("#length").val());
+        var wid = parseInt($("#width").val());
+        if (!len) len = 0;
+        if (!wid) wid = 0;
+        if ($("#unit").val() === "in") {
+            $(".product-dimensions").html(parseFloat((len * wid) / 144).toFixed(2));
+        } else {
+            $(".product-dimensions").html(parseFloat(len * wid).toFixed(2));
+        }
+    }
+
+    $("#length").bind("keyup change", calc);
+    $("#width").bind("keyup change", calc);
+    $("#unit").bind("keyup change", calc);
+    
+</script>
+
+{% endblock %}

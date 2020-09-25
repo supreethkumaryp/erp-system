@@ -54,6 +54,10 @@
 <!-- checkboxes-radios -->
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/css/plugins/forms/checkboxes-radios.css')}}">
 <!-- END: checkboxes-radios -->
+
+<!-- select2 -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='app-assets/vendors/css/forms/selects/select2.min.css')}}">
+<!-- END: select2 -->
 {% endblock %}
 
 {% block body_attribs %} class="vertical-layout vertical-menu-modern 2-columns menu-collapsed fixed-navbar" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns"{% endblock %}
@@ -136,4 +140,9 @@
 <script src="{{url_for('static', filename='app-assets/vendors/js/forms/extended/inputmask/jquery.inputmask.bundle.min.js')}}"></script>
 <script src="{{url_for('static', filename='app-assets/js/scripts/forms/extended/form-inputmask.js')}}"></script>
 <!-- END: Input Mask -->
+
+<!-- select2 -->
+<script src="{{url_for('static', filename='app-assets/vendors/js/forms/select/select2.full.min.js')}}"></script>
+<script src="{{url_for('static', filename='app-assets/js/scripts/forms/select/form-select2.js')}}"></script>
+<!-- END: select2 -->
 {% endblock %}

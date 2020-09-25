@@ -1,10 +1,11 @@
 import datetime
 from flask_wtf import FlaskForm, Form
-from wtforms import StringField, SubmitField, TextAreaField, IntegerField, SelectField, BooleanField, HiddenField, DateTimeField, RadioField
+from wtforms import StringField, SubmitField, TextAreaField, IntegerField, SelectField, BooleanField, HiddenField, DateTimeField, RadioField, FileField, FieldList, FormField, SelectMultipleField
 from wtforms.validators import InputRequired, Email, Length, EqualTo, Email
 from wtforms.widgets import html5, html_params
+from flask_wtf.file import FileAllowed
 
-from app.schema import userstatus, roles, Product_Type, Product_Unit, Product_Price_Type, Discount_Type, Brands
+from app.schema import userstatus, roles, Product_Type, Product_Unit, Product_Price_Type, Discount_Type, Brands, Colours
 
 statuschoice = [(str(value),key.replace("_"," ").capitalize()) for key,value in userstatus.items()]
 roleschoice = [(str(value),key.replace("_"," ").capitalize()) for key,value in roles.items() if key != "developer"]
@@ -47,6 +48,12 @@ class PartyForm(FlaskForm):
     openingbalancedate = StringField("Opening Balance Date", default=datetime.date.today().strftime("%d/%m/%Y"))
     status = SelectField("User Status", choices=statuschoice, default=1)
 
+class DesignForm(FlaskForm):
+    designid = HiddenField("_id", default="")
+    designname = StringField(label="Design Name")
+    colour = SelectMultipleField(label="Colour", render_kw={"data-placeholder":"Select a Colour..."})
+    photo = FileField('image', validators=[FileAllowed(['jpg', 'png'], 'Images only!')], render_kw={"accept":"image/x-png,image/jpeg"})
+
 class ProductForm(FlaskForm):
     id = HiddenField("_id",default="")
     producttype = SelectField(label="Product Type",choices=producttypechoice)
@@ -69,3 +76,6 @@ class ProductForm(FlaskForm):
     sellingpricetype = SelectField(label="Selling Price Type", choices=productpricetypechoice)
     costpricetype = SelectField(label="Cost Price Type", choices=productpricetypechoice)
     discounttype = SelectField(label="Discount Type", choices=discounttypechoice)
+    designs = FieldList(FormField(DesignForm), min_entries=1)
+    addDesign = SubmitField(label="Add Design")
+    removeDesign = SubmitField(label="Remove Design")

@@ -8,15 +8,17 @@ from wtforms import StringField
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from config import BASE_DIR
+from werkzeug.utils import secure_filename
+
 
 # Import app components
-from app import db, jwt, bcrypt, login_manager, gst#, dropzone
+from app import db, jwt, bcrypt, login_manager, gst, app#, dropzone
 
 # Import module forms
 from app.dashboard.general.forms import BranchForm, PartyForm, ProductForm
 
 # Importing Schema
-from app.schema import Branches, User, roles, userstatus, User_Groups, Products, Brands, Product_Groups, Product_Sub_Groups, Taxes, Units, Products
+from app.schema import Branches, User, roles, userstatus, User_Groups, Products, Brands, Product_Groups, Product_Sub_Groups, Taxes, Units, Products, Colours, ProductDesign
 
 # Importing User UID generator
 from app.auth.controller import getnextid
@@ -29,11 +31,11 @@ general = Blueprint('general', __name__, url_prefix='/dashboard')
 def generate_password(length):
     return "".join(choice(string.ascii_letters + string.digits) for _ in range(length))
 
-# def get_new_barcode():
-#     while True:
-#         barcode = str(int(round(time.time() * 1000)))
-#         if not Products.objects(barcode=barcode):
-#             return barcode
+def get_new_barcode():
+    while True:
+        barcode = str(int(round(time.time() * 1000)))
+        if not Products.objects(barcode=barcode):
+            return barcode
 
 @general.route('/branches/', methods=['GET', 'POST'])
 @login_required
@@ -279,3 +281,213 @@ def getpartydetails():
         data[key] = json.loads(user["brand"])[key] if key in json.loads(user["brand"]) else "NA",
 
     return jsonify(data)
+
+@general.route('/products/', methods=['GET', 'POST'])
+@login_required
+def products():
+    return render_template('dashboard/general/products.html')
+
+@general.route('/get-all-products/', methods=['GET', 'POST'])
+@login_required
+def getallproducts():
+    products = Products.objects().only('code','barcode','name','unitofmeasure','sellingprice','tax','discountprice','minstock')
+    products = [json.loads(product.to_json(follow_reference=True)) for product in products]
+    return jsonify(data=products)
+
+@general.route('/new-product/', methods=['GET', 'POST'])
+@login_required
+def newproduct():
+    form = ProductForm(request.form)
+
+    if form.addDesign.data:
+        form.designs.append_entry()
+
+    if form.removeDesign.data:
+        if len(form.designs) > 1:
+            form.designs.pop_entry()
+
+    if request.method == 'POST' and not form.removeDesign.data and not form.addDesign.data:
+        designsList = []
+        for design in form.designs:
+            try:
+                filename = str(form.barcode.data) + str(design.photo.name).split("-")[1] + "." + request.files[design.photo.name].filename.split(".")[-1]
+                filepath = os.path.join(os.path.join(app.root_path, 'static/assets/images/products'), filename)
+                image_data = request.files[design.photo.name].read()
+                open(filepath, 'wb').write(image_data)
+            except:
+                filepath = "None"
+
+            status = ProductDesign(
+                code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
+                name = design.designname.data,
+                colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data],
+                photo = filepath
+            ).save()
+            if(status):
+                designsList.append(status.to_dbref())
+
+        product = Products(
+            producttype = form.producttype.data,
+            code = form.code.data,
+            barcode = form.barcode.data,
+            name = form.name.data,
+            brand = Brands.objects(pk=form.brand.data).first().to_dbref() if form.brand.data else None,
+            group = Product_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
+            subgroup = Product_Sub_Groups.objects(pk=form.subgroup.data).first().to_dbref() if form.subgroup.data else None,
+            tax = Taxes.objects(pk=form.tax.data).first().to_dbref() if form.tax.data else None,
+            cess = Taxes.objects(pk=form.cess.data).first().to_dbref() if form.cess.data else None,
+            unitofmeasure = Units.objects(pk=form.unitofmeasure.data).first().to_dbref() if form.unitofmeasure.data else None,
+            length = float(form.length.data),
+            width = float(form.width.data),
+            unit = form.unit.data,
+            sellingprice = float(form.sellingprice.data),
+            minstock = int(form.minstock.data),
+            costprice = float(form.costprice.data),
+            discountprice = float(form.discountprice.data),
+            sellingpricetype = form.sellingpricetype.data,
+            costpricetype = form.costpricetype.data,
+            discounttype = form.discounttype.data,
+            productdesign = designsList,
+            status = True
+        ).save()
+
+        if product:
+            flash("New Product added Successfully", "success")
+            return redirect(url_for('general.products'))
+
+        flash("Failed to add Product","error")
+        return redirect(url_for('general.products'))
+
+    form.barcode.data = get_new_barcode()
+    form.brand.choices = [(str(brand.pk),str(brand.name)) for brand in Brands.objects()]
+    form.group.choices = [("","-- NA --")] + [(str(group.pk),str(group.name)) for group in Product_Groups.objects()]
+    form.subgroup.choices = [("","-- NA --")] + [(str(subgroup.pk),str(subgroup.name)) for subgroup in Product_Sub_Groups.objects()]
+    form.tax.choices = [(str(tax.pk),str(tax.name)) for tax in Taxes.objects(taxtype="IGST")]
+    form.cess.choices = [("","-- NA --")] + [(str(tax.pk),str(tax.name)) for tax in Taxes.objects(taxtype="CESS")]
+    form.unitofmeasure.choices = [(unit["id"],unit["name"]) for unit in Units.objects()]
+    for design in form.designs:
+        design.colour.choices = [(str(col.pk),str(col.name)) for col in Colours.objects()]
+
+    return render_template('dashboard/general/new-product.html',form=form)
+
+@general.route('/edit-product/', methods=['GET', 'POST'])
+@login_required
+def editproduct():
+    form = ProductForm(request.form)
+
+    product = Products.objects(barcode = request.args.get('barcode')).first()
+    product = json.loads(product.to_json(follow_reference=True))
+
+    if form.addDesign.data:
+        form.designs.append_entry()
+
+    if form.removeDesign.data:
+        if len(form.designs) > 1:
+            form.designs.pop_entry()
+        if len(form.designs) < len(product["productdesign"]):
+            product["productdesign"].pop()
+
+    if request.method == 'POST' and not form.removeDesign.data and not form.addDesign.data:
+        product = Products.objects(barcode = request.args.get('barcode')).first()
+        product = json.loads(product.to_json(follow_reference=True))
+        designsList = []
+        newdesignIDS = [design.designid.data for design in form.designs]
+        for index, productDesignData in enumerate(product["productdesign"]):
+            if productDesignData['id'] not in newdesignIDS:
+                # ProductDesign.objects(pk=productDesignData['id']).first().delete()
+                product["productdesign"].pop(index)
+                print(product["productdesign"])
+        # for design in form.designs:
+        #     try:
+        #         filename = str(form.barcode.data) + str(design.photo.name).split("-")[1] + "." + request.files[design.photo.name].filename.split(".")[-1]
+        #         filepath = os.path.join(os.path.join(app.root_path, 'static/assets/images/products'), filename)
+        #         image_data = request.files[design.photo.name].read()
+        #         open(filepath, 'wb').write(image_data)
+        #     except:
+        #         filepath = "None"
+
+        #     status = ProductDesign(
+        #         code = str(form.barcode.data) + str(design.photo.name).split("-")[1],
+        #         name = design.designname.data,
+        #         colour = [Colours.objects(pk=col).first().to_dbref() for col in design.colour.data],
+        #         photo = filepath
+        #     ).save()
+        #     if(status):
+        #         designsList.append(status.to_dbref())
+
+        # product = Products(
+        #     producttype = form.producttype.data,
+        #     code = form.code.data,
+        #     barcode = form.barcode.data,
+        #     name = form.name.data,
+        #     brand = Brands.objects(pk=form.brand.data).first().to_dbref() if form.brand.data else None,
+        #     group = Product_Groups.objects(pk=form.group.data).first().to_dbref() if form.group.data else None,
+        #     subgroup = Product_Sub_Groups.objects(pk=form.subgroup.data).first().to_dbref() if form.subgroup.data else None,
+        #     tax = Taxes.objects(pk=form.tax.data).first().to_dbref() if form.tax.data else None,
+        #     cess = Taxes.objects(pk=form.cess.data).first().to_dbref() if form.cess.data else None,
+        #     unitofmeasure = Units.objects(pk=form.unitofmeasure.data).first().to_dbref() if form.unitofmeasure.data else None,
+        #     length = float(form.length.data),
+        #     width = float(form.width.data),
+        #     unit = form.unit.data,
+        #     sellingprice = float(form.sellingprice.data),
+        #     minstock = int(form.minstock.data),
+        #     costprice = float(form.costprice.data),
+        #     discountprice = float(form.discountprice.data),
+        #     sellingpricetype = form.sellingpricetype.data,
+        #     costpricetype = form.costpricetype.data,
+        #     discounttype = form.discounttype.data,
+        #     productdesign = designsList,
+        #     status = True
+        # ).save()
+
+        # if product:
+        #     flash("New Product added Successfully", "success")
+        #     return redirect(url_for('general.products'))
+
+        # flash("Failed to add Product","error")
+        # return redirect(url_for('general.products'))
+
+    form.brand.choices = [(str(brand.pk),str(brand.name)) for brand in Brands.objects()]
+    form.group.choices = [("","-- NA --")] + [(str(group.pk),str(group.name)) for group in Product_Groups.objects()]
+    form.subgroup.choices = [("","-- NA --")] + [(str(subgroup.pk),str(subgroup.name)) for subgroup in Product_Sub_Groups.objects()]
+    form.tax.choices = [(str(tax.pk),str(tax.name)) for tax in Taxes.objects(taxtype="IGST")]
+    form.cess.choices = [("","-- NA --")] + [(str(tax.pk),str(tax.name)) for tax in Taxes.objects(taxtype="CESS")]
+    form.unitofmeasure.choices = [(unit["id"],unit["name"]) for unit in Units.objects()]
+
+    if not form.is_submitted():
+        for _ in range(len(product["productdesign"]) - 1):
+            form.designs.append_entry()
+
+    for design in form.designs:
+        design.colour.choices = [(str(col.pk),str(col.name)) for col in Colours.objects()]
+
+    
+    form.producttype.data = product["producttype"]
+    form.code.data = product["code"]
+    form.barcode.data = product["barcode"]
+    form.name.data = product["name"]
+    form.brand.data = product["brand"]["id"] if "brand" in product else ""
+    form.group.data = product["group"]["id"] if "group" in product else ""
+    form.subgroup.data = product["subgroup"]["id"] if "subgroup" in product else ""
+    form.tax.data = product["tax"]["id"] if "tax" in product else ""
+    form.cess.data = product["cess"]["id"] if "cess" in product else ""
+    form.unitofmeasure.data = product["unitofmeasure"]["id"] if "unitofmeasure" in product else ""
+    form.length.data = product["length"]
+    form.width.data = product["width"]
+    form.unit.data = product["unit"]
+    form.sellingprice.data = product["sellingprice"]
+    form.minstock.data = product["minstock"]
+    form.costprice.data = product["costprice"]
+    form.discountprice.data = product["discountprice"]
+    form.sellingpricetype.data = product["sellingpricetype"]
+    form.costpricetype.data = product["costpricetype"]
+    form.discounttype.data = product["discounttype"]
+    for index, productDesignData in enumerate(product["productdesign"]):
+        form.designs[index].designid.data = productDesignData['id']
+        form.designs[index].designname.data = productDesignData['name']
+        data = []
+        for color in productDesignData['colour']:
+            data.append(color['id'])
+        form.designs[index].colour.data = data
+
+    return render_template('dashboard/general/edit-product.html',form=form)
