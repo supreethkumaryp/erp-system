@@ -29,7 +29,7 @@ from app.api.controller import sendSMS, checkSMSBalance
 general = Blueprint('general', __name__, url_prefix='/dashboard')
 
 def generate_password(length):
-    return "".join(choice(string.ascii_letters + string.digits) for _ in range(length))
+    return "".join(choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 def get_new_barcode():
     while True:
