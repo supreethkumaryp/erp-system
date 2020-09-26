@@ -8,6 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager, login_required
 from flask_dropzone import Dropzone
+from .gst import GST
 
 # Define the WSGI application object
 app = Flask(__name__)
@@ -34,6 +35,9 @@ login_manager.login_view = '/auth/sign-in/'
 
 # Applying CORS to APP
 CORS(app)
+
+# Creating GST Object
+gst = GST()
 
 # Sample HTTP error handling
 @app.errorhandler(400)
