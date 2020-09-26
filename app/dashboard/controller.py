@@ -18,7 +18,7 @@ dashboard = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 @dashboard.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    if current_user.role > 32:
+    if current_user.role >= 32:
         smsBalance = Wallet.objects(name="sms").first().balance
         whatsappBalance = Wallet.objects(name="whatsapp").first().balance
         return render_template("dashboard/dashboard-admin.html", smsBalance=smsBalance, whatsappBalance=whatsappBalance)
